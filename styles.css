@@ -162,3 +162,16 @@ form button:hover::before {
   padding: 10px;
   color: white;
 }
+
+.botonBorrarTodo {
+  all: unset;
+  color: whitesmoke;
+  padding: 5px;
+}
+
+.botonBorrarTodo:hover {
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: 600;
+  color: rgb(160, 255, 200);
+}
