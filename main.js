@@ -7,13 +7,19 @@ const msg = document.querySelector(".msg");
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
-  let texto = input.value;
+  agregarItem();
+});
 
-  if (texto !== "") {
+const agregarItem = (item) => {
+  let texto = item ? item : input.value;
+
+  if (texto !== "" && texto !== null && texto !== undefined) {
     let li = document.createElement("li");
     let p = document.createElement("p");
 
     p.textContent = texto;
+
+    !item && addToLocalStorage(texto);
 
     li.appendChild(p);
     ul.appendChild(li);
@@ -26,7 +32,7 @@ form.addEventListener("submit", (e) => {
     input.value = "";
     msg.style.display = "none";
   }
-});
+};
 
 function agregarBotonBorrado() {
   let deleteButton = document.createElement("button");
@@ -37,6 +43,8 @@ function agregarBotonBorrado() {
   deleteButton.addEventListener("click", (e) => {
     const item = e.target.parentElement;
     ul.removeChild(item);
+
+    borrarDeLocalStorage(item.firstChild.innerHTML);
 
     if (document.querySelectorAll("li").length === 0) {
       msg.style.display = "block";
@@ -54,6 +62,7 @@ function borrarTodos() {
 
   borrarTodos.addEventListener("click", () => {
     do {
+      borrarDeLocalStorage(ul.firstChild.firstChild.innerHTML);
       ul.removeChild(ul.firstChild);
     } while (ul.children.length !== 0);
 
@@ -66,3 +75,43 @@ function borrarTodos() {
   });
   return borrarTodos;
 }
+
+const addToLocalStorage = (item) => {
+  if (localStorage.getItem("lista")) {
+    const lista = JSON.parse(localStorage.getItem("lista"));
+
+    lista.push(item);
+
+    localStorage.setItem("lista", JSON.stringify(lista));
+  } else {
+    localStorage.setItem("lista", JSON.stringify([item]));
+  }
+};
+
+const borrarDeLocalStorage = (item) => {
+  const lista = JSON.parse(localStorage.getItem("lista"));
+
+  const index = lista.indexOf(item);
+
+  if (index !== -1) {
+    lista.splice(index, 1);
+    localStorage.setItem("lista", JSON.stringify(lista));
+  }
+};
+
+const checkLocalStorage = () => {
+  if (localStorage.getItem("lista")) {
+    const lista = JSON.parse(localStorage.getItem("lista"));
+
+    if (lista.length >= 0) {
+      for (let index = 0; index < lista.length; index++) {
+        const element = lista[index];
+        agregarItem(element);
+      }
+    }
+  }
+};
+
+window.onload = () => {
+  checkLocalStorage();
+};
